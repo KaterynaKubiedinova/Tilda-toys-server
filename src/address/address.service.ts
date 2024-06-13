@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,71 +14,80 @@ export class AddressService {
   constructor(
     @InjectRepository(Address)
     private readonly addressRepository: Repository<Address>,
-  ) { }
-  
+  ) {}
+
   async create(dto: CreateAddressDto) {
-    const existUser = await this.addressRepository.findOne({
+    const existUserAddress = await this.addressRepository.findOne({
       where: {
-        email: dto.email,
+        user: { id: +dto.user_id },
+        title: dto.title,
       },
     });
-    if (existUser) throw new BadRequestException('This user already exsist');
-  
-    const salt = await bcrypt.genSalt();
-    const password_hash = await bcrypt.hash(dto.password, salt);
-  
-    const user = await this.userRepository.save({
-      name: dto.name,
-      surname: dto.surname,
-      email: dto.email,
-      password_hash,
+    if (existUserAddress)
+      throw new BadRequestException(
+        'This user already has address with this title',
+      );
+
+    const address = await this.addressRepository.save({
+      title: dto.title,
+      city: dto.city,
+      street: dto.street,
+      building_number: dto.building_number,
+      apartment: dto.apartment,
+      postal_code: dto.postal_code,
+      phone_number: dto.phone_number,
+      user: { id: +dto.user_id },
     });
-  
-    return { user };
+
+    return { address };
   }
 
-  findAll() {
-    return `This action returns all address`;
+  async findAllByUser(userId: number) {
+    const addresses = await this.addressRepository.find({
+      where: { user: { id: userId } },
+      select: {
+        title: true,
+        street: true,
+        building_number: true,
+        id: true,
+      },
+    });
+
+    if (!addresses)
+      throw new NotFoundException('This user have not had any addresses yet');
+
+    return addresses;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} address`;
+  async findOne(id: number) {
+    const address = await this.addressRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!address)
+      throw new NotFoundException('This address is not in database');
+
+    return { address };
   }
 
-  update(id: number, updateAddressDto: UpdateAddressDto) {
-    return `This action updates a #${id} address`;
+  async update(id: number, updateAddressDto: UpdateAddressDto) {
+    const address = await this.addressRepository.findOne({ where: { id } });
+
+    if (!address)
+      throw new NotFoundException('This address is not in database');
+
+    Object.assign(address, updateAddressDto);
+
+    return await this.addressRepository.save(address);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} address`;
+  async remove(id: number) {
+    const address = await this.addressRepository.findOne({ where: { id } });
+
+    if (!address) throw new NotFoundException('This address already deleted');
+
+    return await this.addressRepository.remove(address);
   }
-}
-
-async findOne(id: number) {
-  const user = await this.userRepository.findOne({
-    where: {
-      id,
-    },
-  });
-  if (!user) throw new NotFoundException('This user is not in database');
-
-  return { user };
-}
-
-async update(id: number, updateUserDto: UpdateUserDto) {
-  const user = await this.userRepository.findOne({ where: { id } });
-
-  if (!user) throw new NotFoundException('This user is not in database');
-
-  Object.assign(user, updateUserDto);
-
-  return await this.userRepository.save(user);
-}
-
-async remove(id: number) {
-  const user = await this.userRepository.findOne({ where: { id } });
-
-  if (!user) throw new NotFoundException('This user already deleted');
-
-  return await this.userRepository.remove(user);
 }

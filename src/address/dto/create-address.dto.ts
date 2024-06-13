@@ -2,6 +2,9 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateAddressDto {
   @IsNotEmpty()
+  title: string;
+
+  @IsNotEmpty()
   city: string;
 
   @IsNotEmpty()
@@ -15,6 +18,9 @@ export class CreateAddressDto {
 
   @IsNotEmpty()
   phone_number: string;
+
+  @IsNotEmpty()
+  postal_code: string;
 
   @IsNotEmpty()
   user_id: string;

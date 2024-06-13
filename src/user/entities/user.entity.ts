@@ -1,5 +1,5 @@
 import { Address } from 'src/address/entities/address.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -18,6 +18,6 @@ export class User {
   @Column()
   password_hash: string;
 
-  @OneToOne(() => Address, (address) => address.user)
-  address: Address;
+  @OneToMany(() => Address, (address) => address.user)
+  address: Address[];
 }

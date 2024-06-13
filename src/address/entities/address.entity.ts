@@ -3,7 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -11,6 +11,9 @@ import {
 export class Address {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  title: string;
 
   @Column()
   city: string;
@@ -25,9 +28,12 @@ export class Address {
   apartment: string;
 
   @Column()
+  postal_code: string;
+
+  @Column()
   phone_number: string;
 
-  @OneToOne(() => User, (user) => user.address)
+  @ManyToOne(() => User, (user) => user.address)
   @JoinColumn({ name: 'user' })
   user: User;
 }
