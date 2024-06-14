@@ -12,8 +12,9 @@ import { AddressModule } from './address/address.module';
   imports: [
     ProductModule,
     UserModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    AddressModule,
     CategoryModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -29,7 +30,6 @@ import { AddressModule } from './address/address.module';
       }),
       inject: [ConfigService],
     }),
-    AddressModule,
   ],
   controllers: [AppController],
   providers: [AppService],
