@@ -20,7 +20,7 @@ import { AddressModule } from './address/address.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        url: configService.get('DB_HOST'),
+        url: configService.get('DB_URL'),
         entities: [__dirname + '/**/*.entity{.js, .ts}'],
         synchronize: true,
         logging: true,
