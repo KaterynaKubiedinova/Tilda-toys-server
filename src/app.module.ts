@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -19,11 +20,7 @@ import { AddressModule } from './address/address.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        password: configService.get('DB_PASSWORD'),
-        username: configService.get('DB_USERNAME'),
-        database: configService.get('DB_NAME'),
+        url: configService.get('DB_HOST'),
         entities: [__dirname + '/**/*.entity{.js, .ts}'],
         synchronize: true,
         logging: true,
