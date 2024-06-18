@@ -18,13 +18,29 @@ import { AddressModule } from './address/address.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        url: configService.get('DB_URL'),
-        entities: [__dirname + '/**/*.entity{.js, .ts}'],
-        synchronize: true,
-        logging: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        if (configService.get('BUILD_MODE') === 'prod') {
+          return {
+            type: 'postgres',
+            url: configService.get('DB_URL'),
+            entities: [__dirname + '/**/*.entity{.js, .ts}'],
+            synchronize: true,
+            logging: true,
+          };
+        }
+
+        return {
+          type: 'postgres',
+          host: configService.get('DB_HOST'),
+          port: configService.get('DB_PORT'),
+          password: configService.get('DB_PASSWORD'),
+          username: configService.get('DB_USERNAME'),
+          database: configService.get('DB_NAME'),
+          entities: [__dirname + '/**/*.entity{.js, .ts}'],
+          synchronize: true,
+          logging: true,
+        };
+      },
       inject: [ConfigService],
     }),
   ],
