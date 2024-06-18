@@ -13,6 +13,7 @@ async function bootstrap() {
       'Content-Type',
       'Accept',
       'Authorization',
+      'Access-Control-Allow-Origin',
     ],
   });
   await app.listen(4200);
