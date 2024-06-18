@@ -19,6 +19,8 @@ import { AddressModule } from './address/address.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
+        console.log('asfbasdfbaeb', configService.get('BUILD_MODE'));
+
         if (configService.get('BUILD_MODE') === 'prod') {
           return {
             type: 'postgres',
