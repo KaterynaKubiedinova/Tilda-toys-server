@@ -23,7 +23,7 @@ export class Product {
   price: string;
 
   @Column()
-  image: string;
+  image: { id: string; url: string };
 
   @ManyToOne(() => Category, (category) => category.products)
   @JoinColumn({ name: 'category' })

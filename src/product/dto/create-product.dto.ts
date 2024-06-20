@@ -8,7 +8,7 @@ export class CreateProductDto {
   description: string;
 
   @IsNotEmpty()
-  image: object;
+  image: Express.Multer.File;
 
   @IsNotEmpty()
   category_id: string;

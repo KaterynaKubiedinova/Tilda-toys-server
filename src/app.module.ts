@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
 import { AddressModule } from './address/address.module';
+import { ImageUploaderModule } from './image-uploader/image-uploader.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AddressModule } from './address/address.module';
       }),
       inject: [ConfigService],
     }),
+    ImageUploaderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
