@@ -21,6 +21,7 @@ import { AddressModule } from './address/address.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('POSTGRES_HOST'),
+        ssl: configService.get('BUILD_MODE') === 'prod' ? true : false,
         port: 5432,
         password: configService.get('POSTGRES_PASSWORD'),
         username: configService.get('POSTGRES_USER'),
