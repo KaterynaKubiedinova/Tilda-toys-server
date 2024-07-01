@@ -12,7 +12,7 @@ import * as crypto from 'crypto';
 export class ImageUploaderService {
   private readonly s3Client = new S3Client({
     credentials: {
-      accessKeyId: this.configService.getOrThrow('AWS_ACCESS_KEY'),
+      accessKeyId: this.configService.getOrThrow('AWS_PRIVATE_ACCESS_KEY'),
       secretAccessKey: this.configService.getOrThrow('AWS_SECRET_ACCESS_KEY'),
     },
     region: this.configService.getOrThrow('AWS_S3_BUCKET_REGION'),
