@@ -16,6 +16,7 @@ import { ImageUploaderModule } from './image-uploader/image-uploader.module';
     UserModule,
     AddressModule,
     CategoryModule,
+    ImageUploaderModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -33,7 +34,6 @@ import { ImageUploaderModule } from './image-uploader/image-uploader.module';
       }),
       inject: [ConfigService],
     }),
-    ImageUploaderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -8,15 +8,12 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
-import { ImageUploaderService } from 'src/image-uploader/image-uploader.service';
-import crypto from 'crypto';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
-    private readonly imageUploaderService: ImageUploaderService,
   ) {}
 
   async create(dto: CreateProductDto) {
@@ -28,16 +25,14 @@ export class ProductService {
 
     if (existProduct)
       throw new BadRequestException('This product already exsist');
-    const randomImageName = (bytes = 32) =>
-      crypto.randomBytes(bytes).toString('hex');
-    const imageName = randomImageName();
-    await this.imageUploaderService.create(dto.image, imageName);
+
     const product = await this.productRepository.save({
       title: dto.title,
       description: dto.description,
       category: { id: +dto.category_id },
       price: dto.price,
-      image: { id: imageName, url: '' },
+      imageId: dto.imageId,
+      imageUrl: dto.imageUrl,
     });
     return { product };
   }
@@ -46,20 +41,11 @@ export class ProductService {
     const allProducts = await this.productRepository.find({
       select: {
         id: true,
-        image: {
-          id: true,
-          url: true,
-        },
+        imageUrl: true,
         price: true,
         title: true,
       },
     });
-
-    for (const product of allProducts) {
-      this.imageUploaderService
-        .findOne(product.image.id)
-        .then((data) => (product.image.url = data.url));
-    }
 
     return allProducts;
   }
