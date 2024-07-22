@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ProductModule } from './product/product.module';
-import { UserModule } from './user/user.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CategoryModule } from './category/category.module';
-import { AddressModule } from './address/address.module';
-import { ImageUploaderModule } from './image-uploader/image-uploader.module';
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { ProductModule } from './product/product.module'
+import { UserModule } from './user/user.module'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { CategoryModule } from './category/category.module'
+import { AddressModule } from './address/address.module'
+import { ImageUploaderModule } from './image-uploader/image-uploader.module'
+import { UsersRolesModule } from './users-roles/users-roles.module'
+import { RoleModule } from './role/role.module'
+import { AuthModule } from './auth/auth.module'
+import { PassportModule } from '@nestjs/passport'
 
 @Module({
   imports: [
@@ -34,6 +38,10 @@ import { ImageUploaderModule } from './image-uploader/image-uploader.module';
       }),
       inject: [ConfigService],
     }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    UsersRolesModule,
+    RoleModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

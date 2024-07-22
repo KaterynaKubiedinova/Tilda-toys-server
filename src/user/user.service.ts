@@ -2,13 +2,13 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-} from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
+} from '@nestjs/common'
+import { CreateUserDto } from './dto/create-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
+import { User } from './entities/user.entity'
+import { Repository } from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -22,20 +22,40 @@ export class UserService {
       where: {
         email: dto.email,
       },
-    });
-    if (existUser) throw new BadRequestException('This user already exsist');
+    })
+    if (existUser) throw new BadRequestException('This user already exsist')
 
-    const salt = await bcrypt.genSalt();
-    const password_hash = await bcrypt.hash(dto.password, salt);
+    const salt = await bcrypt.genSalt()
+    const password_hash = await bcrypt.hash(dto.password, salt)
 
     const user = await this.userRepository.save({
       name: dto.name,
       surname: dto.surname,
       email: dto.email,
       password_hash,
-    });
+      refresh_token: '',
+    })
 
-    return { user };
+    return { user }
+  }
+
+  async createUser(dto: CreateUserDto) {
+    const existUser = await this.userRepository.findOne({
+      where: {
+        email: dto.email,
+      },
+    })
+    if (existUser) throw new BadRequestException('This user already exsist')
+
+    const user = await this.userRepository.save({
+      name: dto.name,
+      surname: dto.surname,
+      email: dto.email,
+      password_hash: dto.password,
+      refresh_token: '',
+    })
+
+    return user
   }
 
   async findOne(id: number) {
@@ -43,27 +63,44 @@ export class UserService {
       where: {
         id,
       },
-    });
-    if (!user) throw new NotFoundException('This user is not in database');
+    })
+    if (!user) throw new NotFoundException('This user is not in database')
 
-    return { user };
+    return { user }
+  }
+
+  async findOneByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email,
+      },
+      select: {
+        email: true,
+        id: true,
+        password_hash: true,
+      },
+    })
+
+    if (!user) throw new NotFoundException('This user is not in database')
+
+    return user
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } })
 
-    if (!user) throw new NotFoundException('This user is not in database');
+    if (!user) throw new NotFoundException('This user is not in database')
 
-    Object.assign(user, updateUserDto);
+    Object.assign(user, updateUserDto)
 
-    return await this.userRepository.save(user);
+    return await this.userRepository.save(user)
   }
 
   async remove(id: number) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } })
 
-    if (!user) throw new NotFoundException('This user already deleted');
+    if (!user) throw new NotFoundException('This user already deleted')
 
-    return await this.userRepository.remove(user);
+    return await this.userRepository.remove(user)
   }
 }

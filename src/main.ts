@@ -1,12 +1,16 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import * as cookieParser from 'cookie-parser'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
+  const app = await NestFactory.create(AppModule)
+  app.use(cookieParser())
+  app.setGlobalPrefix('api')
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    credentials: true,
     allowedHeaders: [
       'Origin',
       'X-Requested-With',
@@ -15,7 +19,17 @@ async function bootstrap() {
       'Authorization',
       'Access-Control-Allow-Origin',
     ],
-  });
-  await app.listen(4200);
+  })
+
+  const config = new DocumentBuilder()
+    .setTitle('Tilda store')
+    .setDescription('The Tilda API description')
+    .setVersion('1.0')
+    .addTag('Tilda')
+    .build()
+  const document = SwaggerModule.createDocument(app, config)
+  SwaggerModule.setup('api', app, document)
+
+  await app.listen(4200)
 }
-bootstrap();
+bootstrap()
