@@ -1,11 +1,10 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import * as cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-  app.use(cookieParser())
   app.setGlobalPrefix('api')
   app.enableCors({
     origin: true,
@@ -20,6 +19,7 @@ async function bootstrap() {
       'Access-Control-Allow-Origin',
     ],
   })
+  app.use(cookieParser())
 
   const config = new DocumentBuilder()
     .setTitle('Tilda store')
